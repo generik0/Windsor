@@ -16,7 +16,8 @@
 namespace Castle.Windsor.Extensions.DependencyInjection
 {
 	using System;
-	
+	using System.Collections.Generic;
+
 	using Castle.Windsor;
 	using Castle.Windsor.Extensions.DependencyInjection.Scope;
 	
@@ -33,10 +34,25 @@ namespace Castle.Windsor.Extensions.DependencyInjection
 
 		public IServiceScope CreateScope()
 		{
-			var scope = ExtensionContainerScope.BeginScope(ExtensionContainerScope.Current);
-			
+			var parentScope = (scopeFactoryContainer.Resolve<IServiceProvider>() as WindsorScopedServiceProvider)?.scope ?? ExtensionContainerRootScope.RootScope;
+			var scope = ExtensionContainerScope.BeginScope(parentScope);
+
+			if (parentScope == scope)
+			{
+				;//debugging
+			}
+
+			if (parentScope != null)
+			{
+				;
+			}
 			//since WindsorServiceProvider is scoped, this gives us new instance
-			var provider = scopeFactoryContainer.Resolve<IServiceProvider>();
+			var arguments = new Dictionary<string, object> 
+			{ 
+				["currentScope"] = scope, 
+				["parentScope"] = parentScope
+			};
+			var provider = scopeFactoryContainer.Resolve<IServiceProvider>(arguments);
 
 			return new ServiceScope(scope, provider);
 		}

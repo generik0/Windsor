@@ -87,16 +87,19 @@ namespace Castle.Windsor.Extensions.DependencyInjection.Scope
 		/// </summary>
 		internal class ForcedScope : IDisposable
 		{
-			private readonly ExtensionContainerScope previousScope;
-			public ForcedScope(ExtensionContainerScope scope)
+			private readonly ExtensionContainerScope parent;
+
+			public ForcedScope(ExtensionContainerScope scope, ExtensionContainerScope parent)
 			{
-				previousScope = ExtensionContainerScope.Current;
-				ExtensionContainerScope.current.Value = scope;
+				this.parent = parent;
+				current.Value = scope;
 			}
 			public void Dispose()
 			{
-				ExtensionContainerScope.current.Value = previousScope;
+				current.Value = parent;
 			}
 		}
+
+		
 	}
 }
